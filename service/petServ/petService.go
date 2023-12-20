@@ -1,4 +1,4 @@
-package petService
+package petServ
 
 import (
 	"pet/repository"

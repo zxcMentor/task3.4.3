@@ -3,33 +3,34 @@ package userHandler
 import (
 	"encoding/json"
 	"net/http"
-	"pet/mw"
-	"pet/service/userService"
+	"pet/middleware"
+	"pet/repository/userRepo"
+	"pet/service/userServ"
 
 	"github.com/gorilla/mux"
 )
 
 type UserHandler struct {
-	service *userService.UserService
+	service *userServ.UserService
 }
 
-func NewUserHandler(service *userService.UserService) *UserHandler {
+func NewUserHandler(service *userServ.UserService) *UserHandler {
 	return &UserHandler{
 		service: service,
 	}
 }
 
-func RegisterUserHandlers(r *mux.Router, service *userService.UserService) {
+func RegisterUserHandlers(r *mux.Router, service *userServ.UserService) {
 	handler := NewUserHandler(service)
 
-	r.HandleFunc("/users", mw.TokenAuthMiddleware(handler.GetHandler)).Methods("GET")
-	r.HandleFunc("/users", mw.TokenAuthMiddleware(handler.PutHandler)).Methods("PUT")
-	r.HandleFunc("/users", mw.TokenAuthMiddleware(handler.PostNewUserHandler)).Methods("POST")
-	r.HandleFunc("/login", mw.TokenAuthMiddleware(handler.GetLoginHandler)).Methods("GET")
-	r.HandleFunc("/logout", mw.TokenAuthMiddleware(handler.GetLogoutHandler)).Methods("GET")
-	r.HandleFunc("/users", mw.TokenAuthMiddleware(handler.DeleteUserHandler)).Methods("DELETE")
-	r.HandleFunc("/users/array", mw.TokenAuthMiddleware(handler.PostNewArrayOfUsersHandler)).Methods("POST")
-	r.HandleFunc("/users/list", mw.TokenAuthMiddleware(handler.PostNewListOfUserHandler)).Methods("PUT")
+	r.HandleFunc("/users", middleware.TokenAuthMiddleware(handler.GetHandler)).Methods("GET")
+	r.HandleFunc("/users", middleware.TokenAuthMiddleware(handler.PutHandler)).Methods("PUT")
+	r.HandleFunc("/users", middleware.TokenAuthMiddleware(handler.service.PostNewUserHandler)).Methods("POST")
+	r.HandleFunc("/login", middleware.TokenAuthMiddleware(handler.service.PostNewUserMethods("GET")
+	r.HandleFunc("/logout", middleware.TokenAuthMiddleware(handler.GetLogoutHandler)).Methods("GET")
+	r.HandleFunc("/users", middleware.TokenAuthMiddleware(handler.DeleteUserHandler)).Methods("DELETE")
+	r.HandleFunc("/users/array", middleware.TokenAuthMiddleware(handler.PostNewArrayOfUsersHandler)).Methods("POST")
+	r.HandleFunc("/users/list", middleware.TokenAuthMiddleware(handler.PostNewListOfUserHandler)).Methods("PUT")
 }
 
 func (h *UserHandler) GetHandler(w http.ResponseWriter, r *http.Request) {
@@ -45,7 +46,7 @@ func (h *UserHandler) GetHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *UserHandler) PutHandler(w http.ResponseWriter, r *http.Request) {
-	var user userService.User
+	var user userServ.User
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 		http.Error(w, "Invalid JSON payload", http.StatusBadRequest)
 		return

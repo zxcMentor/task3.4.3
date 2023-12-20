@@ -5,7 +5,7 @@ import (
 	_ "pet/docs"
 	"pet/handler/petHandler"
 	"pet/repository/petRepo"
-	"pet/service/petService"
+	"pet/service/petServ"
 
 	"github.com/gorilla/mux"
 	"github.com/swaggo/http-swagger"
@@ -14,7 +14,7 @@ import (
 func main() {
 	r := mux.NewRouter()
 
-	petHandler := petHandler.NewPetHandler(petService.NewPetService(petRepo.NewPetRepo()))
+	petHandler := petHandler.NewPetHandler(petServ.NewPetService(petRepo.NewPetRepo()))
 
 	r.HandleFunc("/pets/{id}", petHandler.GetPetByIDHandler).Methods("GET")
 	r.HandleFunc("/pets", petHandler.PostPetHandler).Methods("POST")

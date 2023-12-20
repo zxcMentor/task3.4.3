@@ -1,4 +1,4 @@
-package userService
+package userServ
 
 import (
 	"pet/repository/userRepo"
@@ -12,6 +12,7 @@ func NewUserService(repo *userRepo.UserRepo) *UserService {
 	return &UserService{
 		repo: repo,
 	}
+
 }
 
 func (s *UserService) Get(name string) (userRepo.User, error) {

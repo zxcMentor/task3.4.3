@@ -3,22 +3,21 @@ package storeHandler
 import (
 	"encoding/json"
 	"net/http"
-	"pet/mw"
-	"pet/service/storeService"
+	"pet/service/storeServ"
 	"strconv"
 
 	"github.com/gorilla/mux"
 )
 
 type StoreHandler struct {
-	service *storeService.StoreService
+	service *storeServ.StoreService
 }
 
-func NewStoreHandler(service *storeService.StoreService) *StoreHandler {
+func NewStoreHandler(service *storeServ.StoreService) *StoreHandler {
 	return &StoreHandler{service: service}
 }
 
-func RegisterStoreHandlers(r *mux.Router, service *storeService.StoreService) {
+func RegisterStoreHandlers(r *mux.Router, service *storeServ.StoreService) {
 	handler := NewStoreHandler(service)
 
 	r.HandleFunc("/store/inventory", mw.TokenAuthMiddleware(handler.InventoryHandler)).Methods("GET")
@@ -68,7 +67,7 @@ func (h *StoreHandler) DeleteOrderHandler(w http.ResponseWriter, r *http.Request
 }
 
 func (h *StoreHandler) OrderHandler(w http.ResponseWriter, r *http.Request) {
-	var newOrder storeService.Order
+	var newOrder storeServ.Order
 	if err := json.NewDecoder(r.Body).Decode(&newOrder); err != nil {
 		http.Error(w, "Invalid JSON payload", http.StatusBadRequest)
 		return

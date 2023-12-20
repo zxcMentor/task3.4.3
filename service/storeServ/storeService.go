@@ -1,4 +1,4 @@
-package storeService
+package storeServ
 
 import (
 	"pet/repository/storeRepo"

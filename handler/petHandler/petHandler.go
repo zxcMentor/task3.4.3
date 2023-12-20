@@ -3,22 +3,21 @@ package petHandler
 import (
 	"encoding/json"
 	"net/http"
-	"pet/mw"
-	"pet/service/petService"
+	"pet/service/petServ"
 	"strconv"
 
 	"github.com/gorilla/mux"
 )
 
 type PetHandler struct {
-	service *petService.PetService
+	service *petServ.PetService
 }
 
-func NewPetHandler(service *petService.PetService) *PetHandler {
+func NewPetHandler(service *petServ.PetService) *PetHandler {
 	return &PetHandler{service: service}
 }
 
-func RegisterPetHandlers(r *mux.Router, service *petService.PetService) {
+func RegisterPetHandlers(r *mux.Router, service *petServ.PetService) {
 	handler := NewPetHandler(service)
 
 	r.HandleFunc("/pets/{id}", mw.TokenAuthMiddleware(handler.GetPetByIDHandler)).Methods("GET")
@@ -61,7 +60,7 @@ func (h *PetHandler) UpdatePetByIDHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	var updatedPet petService.Pet
+	var updatedPet petServ.Pet
 	if err := json.NewDecoder(r.Body).Decode(&updatedPet); err != nil {
 		http.Error(w, "Invalid JSON payload", http.StatusBadRequest)
 		return
